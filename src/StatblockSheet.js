@@ -148,7 +148,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 // Wire saves
                 const savesDd = [...this.element.querySelectorAll(".statblock-header div dt")]
                     .find(dt => dt.innerText === game.i18n.localize("DND5E.ClassSaves"))
-                    .parentNode.querySelector("dd");
+                    ?.parentNode.querySelector("dd");
                     savesDd.innerHTML = savesDd.innerHTML.replace(/([\w]+)\s.*?(?=(?:,\s|$))/ig, (abilityText, abilityAbbr) => {
                         return `<span class="rollable saving-throw" data-action="roll" data-type="ability" data-ability="${abilityAbbr.toLowerCase()}">${abilityText}</span>`;
                     });
@@ -157,7 +157,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             // Wire skills
             const skillDd = [...this.element.querySelectorAll(".statblock-header div dt")]
                 .find(dt => dt.innerText === game.i18n.localize("DND5E.Skills"))
-                .parentNode.querySelector("dd");
+                ?.parentNode.querySelector("dd");
                 skillDd.innerHTML = skillDd.innerHTML.replace(/([\w]+)\s.*?(?=(?:,\s|$))/ig, (skillText, skillLabel) => {
                     const abbreviation = Object.keys(CONFIG.DND5E.skills).find(key => CONFIG.DND5E.skills[key].label === skillLabel);
                     return `<span class="rollable" data-action="roll" data-type="skill" data-key="${abbreviation}">${skillText}</span>`;
