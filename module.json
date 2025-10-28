@@ -1,0 +1,43 @@
+{
+  "id": "5e-statblock-sheet",
+  "title": "5e Statblock Sheet",
+  "description": "Simple D&D 5e NPC sheets that look like stat blocks (until you want to edit something).",
+  "version": "",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14.349"
+  },
+  "authors": [
+    {
+      "name": "Aioros",
+      "discord": "MrAioros"
+    }
+  ],
+  "esmodules": ["src/5e-statblock-sheet.js"],
+  "styles": ["styles/5e-statblock-sheet.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "5",
+          "verified": "5.1.10"
+        }
+      }
+    ]
+  },
+  "url": "https://github.com/Aioros/5e-statblock-sheet",
+  "download": "",
+  "manifest": "https://github.com/Aioros/5e-statblock-sheet/releases/latest/download/module.json",
+  "license": "https://www.gnu.org/licenses/agpl-3.0.en.html",
+  "readme": "README.md",
+  "bugs": "https://github.com/Aioros/5e-statblock-sheet/issues"
+}

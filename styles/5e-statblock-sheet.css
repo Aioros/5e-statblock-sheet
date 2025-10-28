@@ -1,0 +1,56 @@
+.actor.statblock-sheet .statblock.npc,
+.actor.statblock-sheet .statblock.npc .statblock-actions-title
+{
+    font-family: var(--dnd5e-font-roboto-condensed);
+}
+
+.actor.statblock-sheet .statblock.npc .statblock-title {
+    margin: 0 0 0.5rem;
+    line-height: normal;
+    font-size: var(--dnd5e-journal-h4-size);
+    font-family: var(--dnd5e-font-roboto-slab);
+}
+
+.actor.statblock-sheet .statblock.npc .statblock-actions-title {
+    font-size: var(--dnd5e-journal-h4-size);
+}
+
+.actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link {
+    display: revert;
+    cursor: pointer;
+    pointer-events: revert;
+}
+
+.actor.statblock-sheet .statblock .statblock-actions .statblock-action .content-link {
+    pointer-events: revert;
+    &:hover {
+        display: revert;
+        cursor: pointer;
+    }
+}
+
+.dnd5e2.sheet.actor.npc.statblock-sheet:not(.minimized, .minimizing, .maximizing, .editable) {
+    min-width: 300px;
+    max-width: 420px;
+    min-height: none;
+}
+
+.actor.statblock-sheet .content-link {
+    padding: 0;
+}
+
+.actor.statblock-sheet .statblock-action [data-roll-item-uuid]:first-of-type {
+    font-style: italic;
+    font-weight: bold;
+}
+
+.actor.statblock-sheet .statblock-action .name {
+    margin-left: -3px;
+}
+
+.actor.statblock-sheet .rollable {
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+}
