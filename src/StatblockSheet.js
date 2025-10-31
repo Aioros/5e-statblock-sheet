@@ -82,7 +82,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             if ( section.actions.length ) {
                 section.actions.sort((lhs, rhs) => lhs.sort - rhs.sort);
                 if ( (key === "legendary") && !section.description ) {
-                    section.description = `<p>${this.getLegendaryActionsDescription()}</p>`;
+                    section.description = `<p>${this.actor.system.getLegendaryActionsDescription()}</p>`;
                 }
             } else delete context.actionSections[key];
         }
