@@ -3,6 +3,7 @@ const TextEditor = foundry.applications.ux.TextEditor.implementation;
 class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     rulesVersion;
+    doubleColumn = false;
 
     /** @inheritdoc */
     static DEFAULT_OPTIONS = {
@@ -57,7 +58,13 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             const category = item.system.properties.has("trait") ? "trait"
                 : (item.system.activities?.contents[0]?.activation?.type ?? "trait");
             if ( category in context.actionSections ) {
-                let description = (await TextEditor.enrichHTML(item.system.description.value, {
+                // Replace @UUID embeds with [[/item]] embeds
+                let originalDescription = item.system.description.value;
+                let description = originalDescription.replace(/@UUID\[[^\]]+\]\{(?<name>[^\}]+)\}/g, (match, name) => {
+                    if (this.actor.items.find(i => i.name === name)) return `[[/item ${name}]]`;
+                    return match;
+                });
+                description = (await TextEditor.enrichHTML(description, {
                     secrets: false, rollData: item.getRollData(), relativeTo: item
                 }));
                 if ( item.identifier === "legendary-actions" ) {
@@ -185,6 +192,14 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
     _renderSpellbook(context, options) {
         if (this._mode === this.constructor.MODES.EDIT) {
             return super._renderSpellbook(context, options);
+        }
+    }
+
+    /** @inheritdoc */
+    _onPosition(position) {
+        if (this.doubleColumn !== position.width > 800) {
+            this.doubleColumn = position.width > 800;
+            this.element.querySelector(".window-content").classList.toggle("double-column", this.doubleColumn);
         }
     }
 }
