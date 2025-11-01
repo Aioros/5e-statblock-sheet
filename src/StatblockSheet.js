@@ -61,7 +61,8 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 // Replace @UUID embeds with [[/item]] embeds
                 let originalDescription = item.system.description.value;
                 let description = originalDescription.replace(/@UUID\[[^\]]+\]\{(?<name>[^\}]+)\}/g, (match, name) => {
-                    if (this.actor.items.find(i => i.name === name)) return `[[/item ${name}]]`;
+                    const itemOnActor = this.actor.items.find(i => i.name === name);
+                    if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
                     return match;
                 });
                 description = (await TextEditor.enrichHTML(description, {
