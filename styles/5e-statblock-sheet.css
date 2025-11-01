@@ -64,7 +64,7 @@
     text-decoration: underline;
 }
 
-.actor.statblock-sheet .statblock-action .name {
+.actor.statblock-sheet .statblock-action .name:empty {
     margin-left: -3px;
 }
 

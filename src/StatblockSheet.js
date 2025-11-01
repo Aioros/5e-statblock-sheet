@@ -81,7 +81,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     context.actionSections[category].actions.push({
                         description,
                         openingTag: openingTag + enrichedName,
-                        name: "",
+                        name: uses ? ` (${uses})` : "",
                         sort: item.sort
                     });
                 }
@@ -131,7 +131,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     .innerHTML = `<span class="rollable" aria-label="Initiative" data-action="roll" data-type="initiative">${context.summary.initiative}</span>`;
                 
                 // Wire ability tables
-                [...this.element.querySelectorAll(".statblock-header .abilities tbody tr")].forEach(tr => {
+                this.element.querySelectorAll(".statblock-header .abilities tbody tr").forEach(tr => {
                     const abbreviationBox = tr.querySelector("th");
                     const abbreviation = abbreviationBox.innerText.toLowerCase();
                     abbreviationBox.innerHTML = `<span class="rollable saving-throw" data-action="roll" data-type="ability" data-ability="${abbreviation}">${abbreviationBox.innerHTML}</span>`;
@@ -147,7 +147,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             // 2014 additions
             else {
                 // Wire abilities
-                [...this.element.querySelectorAll(".statblock-header .ability .name")].forEach(abilityNameSpan => {
+                this.element.querySelectorAll(".statblock-header .ability .name").forEach(abilityNameSpan => {
                     const ability = abilityNameSpan.innerHTML;
                     abilityNameSpan.innerHTML = `<span class="rollable saving-throw" data-action="roll" data-type="ability" data-ability="${ability}">${abilityNameSpan.innerHTML}</span>`;
                     const scoreSpan = abilityNameSpan.parentNode.querySelector(".score");
