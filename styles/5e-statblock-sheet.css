@@ -8,6 +8,10 @@
     font-family: var(--dnd5e-font-roboto-condensed);
 }
 
+.actor.statblock-sheet.npc .sheet-body .main-content {
+    padding: 0 var(--sidebar-padding);
+}
+
 .actor.statblock-sheet .statblock.npc .statblock-title {
     margin: 0 0 0.5rem;
     line-height: normal;

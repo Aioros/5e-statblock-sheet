@@ -197,9 +197,13 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     /** @inheritdoc */
     _onPosition(position) {
-        if (this.doubleColumn !== position.width > 800) {
-            this.doubleColumn = position.width > 800;
+        if (this._mode === this.constructor.MODES.PLAY) {
+            this.doubleColumn = position.width > position.height * 1.15;
             this.element.querySelector(".window-content").classList.toggle("double-column", this.doubleColumn);
+            let statblockWidth = parseFloat(window.getComputedStyle(this.element).getPropertyValue("--dnd5e-statblock-column-width"));
+            if (this.doubleColumn) statblockWidth *= 2;
+            const zoom = position.width / statblockWidth;
+            this.element.querySelector(".statblock").style.zoom = zoom;
         }
     }
 }
