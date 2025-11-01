@@ -7,7 +7,10 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     /** @inheritdoc */
     static DEFAULT_OPTIONS = {
-        classes: ["actor", "standard-form", "dnd5e2", "statblock-sheet"]
+        classes: ["actor", "standard-form", "dnd5e2", "statblock-sheet"],
+        actions: {
+            use: StatblockSheet._onUseItem
+        }
     };
 
     /** @inheritdoc */
@@ -74,9 +77,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     const openingTag = description.match(/^\s*(<p(?:\s[^>]+)?>)/gi)?.[0];
                     if ( openingTag ) description = description.replace(openingTag, "");
                     const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
-                    const enrichedName = (await TextEditor.enrichHTML(`[[/item ${item.id}]]`, {
-                        secrets: false, rollData: item.getRollData(), relativeTo: item
-                    }));
+                    const enrichedName = `<span class="roll-link-group"><span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span></span>`;
                     context.actionSections[category].actions.push({
                         description,
                         openingTag: openingTag + enrichedName,
@@ -206,6 +207,13 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             const zoom = position.width / statblockWidth;
             this.element.querySelector(".statblock").style.zoom = zoom;
         }
+    }
+
+    static _onUseItem(event, target) {
+        const { itemId } = target.closest("[data-item-id]")?.dataset ?? {};
+        const item = this.actor.items.get(itemId);
+        if ( !item || (target.ariaDisabled === "true") ) return;
+        return item.use({ event });
     }
 }
 

@@ -27,13 +27,15 @@
 .actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link-group
 {
     display: revert;
-    text-decoration: none;
     cursor: pointer;
     pointer-events: revert;
 }
 
 .actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link {
+    text-decoration: none;
     font-style: italic;
+}
+.actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link-group {
     &:hover {
         text-decoration: underline;
     }
@@ -56,7 +58,7 @@
     padding: 0;
 }
 
-.actor.statblock-sheet .statblock-action [data-roll-item-uuid]:first-of-type:has(+ .name) {
+.actor.statblock-sheet .statblock-action .roll-link-group:first-of-type:has(+ .name) {
     font-style: italic;
     font-weight: bold;
     text-decoration: underline;
