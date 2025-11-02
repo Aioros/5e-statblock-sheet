@@ -58,7 +58,7 @@
     padding: 0;
 }
 
-.actor.statblock-sheet .statblock-action .roll-link-group:first-of-type:has(+ .name) {
+.actor.statblock-sheet .statblock-action .statblock-roll-link-group {
     font-style: italic;
     font-weight: bold;
     text-decoration: underline;

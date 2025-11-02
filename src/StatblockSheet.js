@@ -77,7 +77,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     const openingTag = description.match(/^\s*(<p(?:\s[^>]+)?>)/gi)?.[0];
                     if ( openingTag ) description = description.replace(openingTag, "");
                     const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
-                    const enrichedName = `<span class="roll-link-group"><span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span></span>`;
+                    const enrichedName = `<span class="statblock-roll-link-group"><span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span></span>`;
                     context.actionSections[category].actions.push({
                         description,
                         openingTag: openingTag + enrichedName,
