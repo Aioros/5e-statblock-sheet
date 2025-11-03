@@ -1,5 +1,23 @@
+:root {
+    --statblock-sheet-columns: 1;
+    --statblock-sheet-min-zoom: 0;
+    --statblock-sheet-max-zoom: 10;
+
+    .actor.statblock-sheet:has(.window-content.double-column) {
+        --statblock-sheet-columns: 2;
+    }
+}
+
+.dnd5e2.sheet.actor.npc.statblock-sheet:not(.minimized, .minimizing, .maximizing, .editable) {
+    min-width: 250px;
+    min-height: 300px;
+}
+
 .actor.statblock-sheet .statblock.npc {
     margin: 10px auto auto;
+
+    --calcZoom: calc(tan(atan2(var(--statblock-sheet-window-size), var(--statblock-sheet-columns) * var(--dnd5e-statblock-column-width))));
+    zoom: clamp(var(--statblock-sheet-min-zoom), var(--calcZoom), var(--statblock-sheet-max-zoom));
 }
 
 .actor.statblock-sheet .statblock.npc,
@@ -47,11 +65,6 @@
         display: revert;
         cursor: pointer;
     }
-}
-
-.dnd5e2.sheet.actor.npc.statblock-sheet:not(.minimized, .minimizing, .maximizing, .editable) {
-    min-width: 300px;
-    min-height: 300px;
 }
 
 .actor.statblock-sheet .content-link {
