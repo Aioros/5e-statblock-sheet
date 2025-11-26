@@ -1,4 +1,5 @@
 const TextEditor = foundry.applications.ux.TextEditor.implementation;
+const domParser = new DOMParser();
 
 class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
@@ -74,15 +75,34 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 if ( item.identifier === "legendary-actions" ) {
                     context.actionSections.legendary.description = description;
                 } else {
-                    const openingTag = description.match(/^\s*(<p(?:\s[^>]+)?>)/gi)?.[0];
-                    if ( openingTag ) description = description.replace(openingTag, "");
-                    const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
+                    // Parse the description as HTML, so it can be navigated through
+                    let descriptionElement = domParser.parseFromString(description, "text/html").getElementsByTagName("body")[0];
+
+                    // Ignore extraneous div wrappers
+                    while (descriptionElement.children.length === 1 && descriptionElement.firstElementChild?.nodeName.toLowerCase() === "div") {
+                        descriptionElement = descriptionElement.firstElementChild;
+                    }
+
+                    const openingParagraph = descriptionElement.getElementsByTagName("p")[0];
+                    const targetElement = openingParagraph ?? descriptionElement.firstElementChild ?? descriptionElement;
                     const enrichedName = `<span class="statblock-roll-link-group" data-roll-item-uuid="${item.uuid}">
                         <span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span>
                     </span>`;
+
+                    // Split the description into an opening and rest section
+                    const splitter = `<div id="statblock-splitter"></div>`;
+
+                    targetElement.innerHTML = enrichedName + splitter + targetElement.innerHTML;
+
+                    const descriptionParts = descriptionElement.innerHTML.split(splitter);
+                    const openingTag = descriptionParts[0];
+                    const descriptionRest = descriptionParts[1];
+
+                    const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
+
                     context.actionSections[category].actions.push({
-                        description,
-                        openingTag: openingTag + enrichedName,
+                        description: descriptionRest,
+                        openingTag,
                         name: uses ? ` (${uses})` : "",
                         sort: item.sort
                     });
