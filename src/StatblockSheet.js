@@ -1,4 +1,5 @@
 const TextEditor = foundry.applications.ux.TextEditor.implementation;
+const domParser = new DOMParser();
 
 class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
@@ -74,6 +75,15 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 if ( item.identifier === "legendary-actions" ) {
                     context.actionSections.legendary.description = description;
                 } else {
+                    // Parse the description as HTML, so it can be navigated through
+                    let descriptionElement = domParser.parseFromString(description, "text/html").getElementsByTagName("body")[0];
+
+                    // Ignore extraneous div wrappers
+                    while (descriptionElement.children.length === 1 && descriptionElement.firstElementChild?.nodeName.toLowerCase() === "div") {
+                        descriptionElement = descriptionElement.firstElementChild;
+                    }
+                    description = descriptionElement.innerHTML;
+
                     const openingTag = description.match(/^\s*(<p(?:\s[^>]+)?>)/gi)?.[0];
                     if ( openingTag ) description = description.replace(openingTag, "");
                     const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
@@ -93,7 +103,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             if ( section.actions.length ) {
                 section.actions.sort((lhs, rhs) => lhs.sort - rhs.sort);
                 if ( (key === "legendary") && !section.description ) {
-                    section.description = `<p>${this.actor.system.getLegendaryActionsDescription()}</p>`;
+                    section.description = `<p>${this.getLegendaryActionsDescription()}</p>`;
                 }
             } else delete context.actionSections[key];
         }
