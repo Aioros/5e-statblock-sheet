@@ -71,14 +71,8 @@
     padding: 0;
 }
 
-.actor.statblock-sheet .statblock-action .statblock-roll-link-group {
-    font-style: italic;
-    font-weight: bold;
+.actor.statblock-sheet .statblock .statblock-actions .statblock-action .statblock-roll-link-group .roll-link {
     text-decoration: underline;
-}
-
-.actor.statblock-sheet .statblock-action .name:empty {
-    margin-left: -3px;
 }
 
 .actor.statblock-sheet .rollable {

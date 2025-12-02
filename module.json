@@ -28,8 +28,8 @@
         "id": "dnd5e",
         "type": "system",
         "compatibility": {
-          "minimum": "5",
-          "verified": "5.1.10"
+          "minimum": "5.2.0",
+          "verified": "5.2.0"
         }
       }
     ]

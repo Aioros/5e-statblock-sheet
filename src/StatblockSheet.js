@@ -1,5 +1,4 @@
 const TextEditor = foundry.applications.ux.TextEditor.implementation;
-const domParser = new DOMParser();
 
 class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
@@ -30,84 +29,6 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             ...await this.actor.system._prepareEmbedContext(this.rulesVersion),
             name: this.actor.name
         });
-
-        // Redo the actions to add enrichers to the names
-        context.actionSections = {
-            trait: {
-                label: game.i18n.localize("DND5E.NPC.SECTIONS.Traits"),
-                hideLabel: this.rulesVersion === "2014",
-                actions: []
-            },
-            action: {
-                label: game.i18n.localize("DND5E.NPC.SECTIONS.Actions"),
-                actions: []
-            },
-            bonus: {
-                label: game.i18n.localize("DND5E.NPC.SECTIONS.BonusActions"),
-                actions: []
-            },
-            reaction: {
-                label: game.i18n.localize("DND5E.NPC.SECTIONS.Reactions"),
-                actions: []
-            },
-            legendary: {
-                label: game.i18n.localize("DND5E.NPC.SECTIONS.LegendaryActions"),
-                description: "",
-                actions: []
-            }
-        };
-
-        for ( const item of this.actor.items ) {
-            if ( !["feat", "weapon"].includes(item.type) ) continue;
-            const category = item.system.properties.has("trait") ? "trait"
-                : (item.system.activities?.contents[0]?.activation?.type ?? "trait");
-            if ( category in context.actionSections ) {
-                // Replace @UUID embeds with [[/item]] embeds
-                let originalDescription = item.system.description.value;
-                let description = originalDescription.replace(/@UUID\[[^\]]+\]\{(?<name>[^\}]+)\}/g, (match, name) => {
-                    const itemOnActor = this.actor.items.find(i => i.name === name);
-                    if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
-                    return match;
-                });
-                description = (await TextEditor.enrichHTML(description, {
-                    secrets: false, rollData: item.getRollData(), relativeTo: item
-                }));
-                if ( item.identifier === "legendary-actions" ) {
-                    context.actionSections.legendary.description = description;
-                } else {
-                    // Parse the description as HTML, so it can be navigated through
-                    let descriptionElement = domParser.parseFromString(description, "text/html").getElementsByTagName("body")[0];
-
-                    // Ignore extraneous div wrappers
-                    while (descriptionElement.children.length === 1 && descriptionElement.firstElementChild?.nodeName.toLowerCase() === "div") {
-                        descriptionElement = descriptionElement.firstElementChild;
-                    }
-                    description = descriptionElement.innerHTML;
-
-                    const openingTag = description.match(/^\s*(<p(?:\s[^>]+)?>)/gi)?.[0];
-                    if ( openingTag ) description = description.replace(openingTag, "");
-                    const uses = item.system.uses.label || item.system.activities?.contents[0]?.uses.label;
-                    const enrichedName = `<span class="statblock-roll-link-group" data-roll-item-uuid="${item.uuid}">
-                        <span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span>
-                    </span>`;
-                    context.actionSections[category].actions.push({
-                        description,
-                        openingTag: openingTag + enrichedName,
-                        name: uses ? ` (${uses})` : "",
-                        sort: item.sort
-                    });
-                }
-            }
-        }
-        for ( const [key, section] of Object.entries(context.actionSections) ) {
-            if ( section.actions.length ) {
-                section.actions.sort((lhs, rhs) => lhs.sort - rhs.sort);
-                if ( (key === "legendary") && !section.description ) {
-                    section.description = `<p>${this.getLegendaryActionsDescription()}</p>`;
-                }
-            } else delete context.actionSections[key];
-        }
-
         return context;
     }
 
@@ -133,6 +54,41 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         await super._onRender(context, options);
 
         if (this._mode === this.constructor.MODES.PLAY) {
+
+            for (const action of this.element.querySelectorAll(".statblock-action")) {
+                const item = this.actor.items.find(i => i.id === action.dataset.id);
+                // Wire action names
+                const name = action.querySelector(".name");
+                const enrichedName = document.createElement("span");
+                enrichedName.classList.add("name", "statblock-roll-link-group");//"statblock-roll-link-group");
+                enrichedName.dataset.rollItemUuid = item.uuid;
+                enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span>`;
+                name.remove();
+                // Replace @UUID embeds with [[/item]] embeds
+                const originalDescription = item.system.description.value;
+                let description = originalDescription.replace(/@UUID\[[^\]]+\]\{(?<name>[^\}]+)\}/g, (match, name) => {
+                    const itemOnActor = this.actor.items.find(i => i.name === name);
+                    if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
+                    return match;
+                });
+                description = (await TextEditor.enrichHTML(description, {
+                    secrets: false, rollData: item.getRollData(), relativeTo: item
+                }));
+                action.innerHTML = description;
+                // Unwrap containing divs
+                let isWrapped;
+                do {
+                    isWrapped = action.children.length === 1 && action.children[0].tagName === "DIV";
+                    if (isWrapped) {
+                        action.children[0].outerHTML = action.children[0].innerHTML;
+                    }
+                } while (isWrapped);
+                // Insert the enriched name
+                const firstParagraph = action.firstElementChild;
+                if (firstParagraph) {
+                    firstParagraph.prepend(enrichedName);
+                }
+            }
 
             // 2024 additions
             if (this.rulesVersion === "2024") {
