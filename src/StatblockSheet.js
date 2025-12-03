@@ -45,13 +45,19 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     /** @inheritdoc */
     async _configureRenderOptions(options) {
-        options.isFirstRender = true;
         await super._configureRenderOptions(options);
+    }
+
+    /** @inheritDoc */
+    _replaceHTML(result, content, options) {
+        content.innerHTML = "";
+        super._replaceHTML(result, content, options);
     }
 
     /** @inheritDoc */
     async _onRender(context, options) {
         await super._onRender(context, options);
+        super._onFirstRender(context, options);
 
         if (this._mode === this.constructor.MODES.PLAY) {
 
@@ -60,7 +66,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 // Wire action names
                 const name = action.querySelector(".name");
                 const enrichedName = document.createElement("span");
-                enrichedName.classList.add("name", "statblock-roll-link-group");//"statblock-roll-link-group");
+                enrichedName.classList.add("name", "statblock-roll-link-group");
                 enrichedName.dataset.rollItemUuid = item.uuid;
                 enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span>`;
                 name.remove();
@@ -175,7 +181,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         if (this._mode === this.constructor.MODES.PLAY) {
             this.doubleColumn = position.width > position.height * 1.15;
             this.element.querySelector(".window-content").classList.toggle("double-column", this.doubleColumn);
-            this.element.querySelector(".statblock").style.setProperty("--statblock-sheet-window-size", position.width + "px");
+            this.element.querySelector(".window-content").style.setProperty("--statblock-sheet-window-size", position.width + "px");
         }
     }
 
