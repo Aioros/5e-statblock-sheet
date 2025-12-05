@@ -41,8 +41,8 @@
     font-size: var(--dnd5e-journal-h4-size);
 }
 
-.actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link,
-.actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link-group
+.actor.statblock-sheet .statblock .roll-link,
+.actor.statblock-sheet .statblock .roll-link-group
 {
     display: revert;
     cursor: pointer;
@@ -53,6 +53,7 @@
     text-decoration: none;
     font-style: italic;
 }
+.actor.statblock-sheet .statblock .statblock-header .roll-link,
 .actor.statblock-sheet .statblock .statblock-actions .statblock-action .roll-link-group {
     &:hover {
         text-decoration: underline;

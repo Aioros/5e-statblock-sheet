@@ -104,6 +104,23 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     .parentNode.querySelector("dd")
                     .innerHTML = `<span class="rollable" aria-label="Initiative" data-action="roll" data-type="initiative">${context.summary.initiative}</span>`;
                 
+                // Wire Gear
+                //const gear = this.actor.system.getGear();
+                const formatter = game.i18n.getListFormatter({ type: "unit" });
+                const gear = formatter.format(
+                    this.actor.system.getGear().map(i => {
+                        let enrichedGear = `<span class="roll-link" data-action="use" data-item-id="${i.id}">${i.name}</span>`;
+                        if (i.system.quantity > 1) enrichedGear += " " + formatNumber(i.system.quantity);
+                        return enrichedGear;
+                    })
+                );
+                const gearDd = [...this.element.querySelectorAll(".statblock-header div dt")]
+                    .find(dt => dt.innerText === game.i18n.localize("DND5E.Gear"))
+                    ?.parentNode.querySelector("dd");
+                if (gearDd) {
+                    gearDd.innerHTML = gear;
+                }
+                
                 // Wire ability tables
                 this.element.querySelectorAll(".statblock-header .abilities tbody tr").forEach(tr => {
                     const abbreviationBox = tr.querySelector("th");
