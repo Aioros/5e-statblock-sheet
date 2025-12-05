@@ -6,6 +6,8 @@
 Simple D&D 5e NPC sheets that look like stat blocks (until you want to edit something).\
 It has all the limitations of the great old Monster Blocks and more!
 
+<img width="1135" height="803" alt="Screen Shot 2025-12-05 at 15 33 05" src="https://github.com/user-attachments/assets/3823dd26-2341-49d8-9c7b-51edaaf28cd3" />
+
 ## How to use
 Once installed, you'll be able to choose two additional sheets for NPCs (the 2014 version and the 2024 version). They're not very practical for complex monsters, but they're small and nice.
 
