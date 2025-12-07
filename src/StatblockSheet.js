@@ -68,7 +68,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 const enrichedName = document.createElement("span");
                 enrichedName.classList.add("name", "statblock-roll-link-group");
                 enrichedName.dataset.rollItemUuid = item.uuid;
-                enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${item.name}</span>`;
+                const uses = item.system.uses.label || (item.system.activities?.size === 1 ? item.system.activities?.contents[0]?.uses.label : undefined);
+                const finalName = uses ? `${item.name} (${uses})` : item.name;
+                enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${finalName}</span>`;
                 name.remove();
                 // Replace @UUID embeds with [[/item]] embeds
                 const originalDescription = item.system.description.value;
