@@ -74,8 +74,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 name.remove();
                 // Replace @UUID embeds with [[/item]] embeds
                 const originalDescription = item.system.description.value;
-                let description = originalDescription.replace(/@UUID\[[^\]]+\]\{(?<name>[^\}]+)\}/g, (match, name) => {
-                    const itemOnActor = this.actor.items.find(i => i.name === name);
+                let description = originalDescription.replace(/@UUID\[(?<uuid>[^\]]+)\](?:\{(?<name>[^\}]+)\})?/g, (match, uuid, name) => {
+                    const { id } = foundry.utils.parseUuid(uuid);
+                    const itemOnActor = this.actor.items.get(id) ?? this.actor.items.getName(name);
                     if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
                     return match;
                 });
@@ -170,9 +171,15 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 }
 
             // Add tooltips
-            this.element.querySelectorAll(".roll-link-group[data-type=item], .statblock-roll-link-group").forEach(link => {
-                link.dataset.tooltip = `<section class="loading" data-uuid="${link.dataset.rollItemUuid}"><i class="fas fa-spinner fa-spin-pulse"></i></section>`;
-            });
+            for (const link of this.element.querySelectorAll(".roll-link-group[data-type=item], .statblock-roll-link-group")) {
+                let uuid = link.dataset.rollItemUuid;
+                if (!uuid) {
+                    const actor = await fromUuid(link.dataset.rollItemActor);
+                    const item = actor?.items.getName(link.dataset.rollItemName);
+                    uuid = item?.uuid;
+                }
+                link.dataset.tooltip = `<section class="loading" data-uuid="${uuid}"><i class="fas fa-spinner fa-spin-pulse"></i></section>`;
+            }
         }
     }
 
