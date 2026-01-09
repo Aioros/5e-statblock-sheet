@@ -4,6 +4,18 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     rulesVersion;
     doubleColumn = false;
+    
+    constructor(options={}) {
+        const newOptions = foundry.utils.deepClone(options);
+        const key = `${StatblockSheet.sheetPrefsTypeKey}${options.document?.limited ? ":limited" : ""}`;
+        const { width, height } = game.user.getFlag("dnd5e", `sheetPrefs.${key}`) ?? {};
+        newOptions.position = options.position ?? {};
+        if ( width && !("width" in newOptions.position) ) newOptions.position.width = width;
+        if ( height && !("height" in newOptions.position) ) newOptions.position.height = height;
+        super(newOptions);
+    }
+
+    static sheetPrefsTypeKey = "npc-statblock";
 
     /** @inheritdoc */
     static DEFAULT_OPTIONS = {
@@ -209,6 +221,22 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             this.element.querySelector(".window-content").classList.toggle("double-column", this.doubleColumn);
             this.element.querySelector(".window-content").style.setProperty("--statblock-sheet-window-size", position.width + "px");
         }
+        this._saveSheetPosition ??= foundry.utils.debounce(this.#saveSheetSize, 250);
+        this._saveSheetPosition(position);
+    }
+
+    /**
+     * Save the sheet's current size to preferences.
+     * @param {ApplicationPosition} position
+     */
+    #saveSheetSize(position) {
+        const { width, height } = position;
+        const prefs = {};
+        if ( width !== "auto" ) prefs.width = width;
+        if ( height !== "auto" ) prefs.height = height;
+        if ( foundry.utils.isEmpty(prefs) ) return;
+        const key = `${StatblockSheet.sheetPrefsTypeKey}${this.actor.limited ? ":limited" : ""}`;
+        game.user.setFlag("dnd5e", `sheetPrefs.${key}`, prefs);
     }
 
     static _onUseItem(event, target) {
