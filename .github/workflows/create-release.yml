@@ -58,7 +58,7 @@ jobs:
           file: module.json
           fields: "{\"version\": \"${{ steps.set_vars.outputs.VERSION }}\", \"download\": \"${{ steps.set_vars.outputs.ZIPURL }}\"}"
       - name: Build Project
-        run: zip 5e-statblock-sheet-${{ steps.get_version.outputs.FULLVERSION }}.zip module.json LICENSE README.md src/* lang/* styles/*
+        run: zip 5e-statblock-sheet-${{ steps.get_version.outputs.FULLVERSION }}.zip module.json LICENSE README.md src/* lang/* styles/* templates/*
       - name: Create Release And Upload Asset
         id: create-release-upload
         uses: softprops/action-gh-release@v2
