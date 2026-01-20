@@ -21,7 +21,8 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
     static DEFAULT_OPTIONS = {
         classes: ["actor", "standard-form", "dnd5e2", "statblock-sheet"],
         actions: {
-            use: StatblockSheet._onUseItem
+            use: StatblockSheet._onUseItem,
+            toggleBiography: StatblockSheet._toggleBiography
         }
     };
 
@@ -31,6 +32,10 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         statblock: {
             container: { classes: ["main-content"], id: "main" },
             template: "systems/dnd5e/templates/actors/embeds/npc-embed.hbs"
+        },
+        biography: {
+            container: { classes: ["main-content"], id: "main" },
+            template: "modules/5e-statblock-sheet/templates/biography.hbs"
         }
     };
 
@@ -41,6 +46,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             ...await this.actor.system._prepareEmbedContext(this.rulesVersion),
             name: this.actor.name
         });
+        context.biography = await this._prepareBiographyContext({ rollData: context.rollData });
+        const baseActor = this.actor.isToken ? this.actor.parent.baseActor : this.actor;
+        context.sheetPrefs = baseActor.getFlag("5e-statblock-sheet", "sheetPrefs") ?? {};
         return context;
     }
 
@@ -49,8 +57,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         let parts = super._configureRenderParts(options);
         if (this._mode === this.constructor.MODES.EDIT) {
             delete parts.statblock;
+            delete parts.biography;
         } else {
-            parts = { statblock: parts.statblock };
+            parts = { statblock: parts.statblock, biography: parts.biography };
         }
         return parts;
     }
@@ -69,9 +78,21 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
     /** @inheritDoc */
     async _onRender(context, options) {
         await super._onRender(context, options);
-        super._onFirstRender(context, options);
+        if (!this.element.querySelector(".sheet-body")) {
+            super._onFirstRender(context, options);
+        }
 
         if (this._mode === this.constructor.MODES.PLAY) {
+            // Move bio after statblock
+            this.element.querySelector(`[data-application-part="statblock"]`).after(this.element.querySelector(`[data-application-part="biography"]`));
+            // Inject bio toggle
+            const bioToggle = document.createElement("i");
+            bioToggle.classList.add("toggle-biography", "fa-solid", "fa-feather");
+            bioToggle.dataset.action = "toggleBiography";
+            bioToggle.dataset.tooltip = "5eStatblockSheet.Buttons.ToggleBiography";
+            this.element.querySelector(".statblock-title").appendChild(bioToggle);
+            // Set bio visibility
+            this.element.classList.toggle("visible-bio", !!context.sheetPrefs.visibleBiography);
 
             for (const action of this.element.querySelectorAll(".statblock-action")) {
                 const item = this.actor.items.find(i => i.id === action.dataset.id);
@@ -244,6 +265,13 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         const item = this.actor.items.get(itemId);
         if ( !item || (target.ariaDisabled === "true") ) return;
         return item.use({ event });
+    }
+
+    static _toggleBiography(event, target) {
+        const isVisibleBio = this.element.classList.contains("visible-bio");
+        this.element.classList.toggle("visible-bio", !isVisibleBio);
+        const baseActor = this.actor.isToken ? this.actor.parent.baseActor : this.actor;
+        baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.visibleBiography", !isVisibleBio);
     }
 }
 

@@ -13,11 +13,24 @@
     min-height: 300px;
 }
 
+.actor.statblock-sheet .window-content .main-content:has(.statblock.npc) {
+    flex-direction: column;
+}
+
 .actor.statblock-sheet .statblock.npc {
     margin: 10px auto auto;
 
     --calcZoom: calc(tan(atan2(var(--statblock-sheet-window-size), var(--statblock-sheet-columns) * var(--dnd5e-statblock-column-width))));
     zoom: clamp(var(--statblock-sheet-min-zoom), var(--calcZoom), var(--statblock-sheet-max-zoom));
+}
+
+.actor.statblock-sheet .statblock-biography {
+    flex: 1;
+    display: none;
+
+    .visible-bio & {
+        display: revert;
+    }
 }
 
 .actor.statblock-sheet .statblock.npc,
@@ -28,6 +41,7 @@
 
 .actor.statblock-sheet.npc .sheet-body .main-content {
     padding: 0 var(--sidebar-padding);
+    gap: 10px;
 }
 
 .actor.statblock-sheet .statblock.npc .statblock-title {
@@ -35,6 +49,15 @@
     line-height: normal;
     font-size: var(--dnd5e-journal-h3-size);
     font-family: var(--dnd5e-font-roboto-slab);
+    position: relative;
+
+    .toggle-biography {
+        display: inline;
+        position: absolute;
+        top: 2px;
+        right: 0;
+        cursor: pointer;
+    }
 }
 
 .actor.statblock-sheet .statblock.npc .statblock-actions-title {
