@@ -146,7 +146,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 const gear = formatter.format(
                     this.actor.system.getGear().map(i => {
                         let enrichedGear = `<span class="roll-link" data-action="use" data-item-id="${i.id}">${i.name}</span>`;
-                        if (i.system.quantity > 1) enrichedGear += " " + formatNumber(i.system.quantity);
+                        if (i.system.quantity > 1) enrichedGear += ` (${dnd5e.utils.formatNumber(i.system.quantity)})`;
                         return enrichedGear;
                     })
                 );
