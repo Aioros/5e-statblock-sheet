@@ -96,7 +96,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
             for (const action of this.element.querySelectorAll(".statblock-action")) {
                 const name = action.querySelector(".name");
-                const item = this.actor.items.find(i => i.id === action.dataset.id);
+                let item = this.actor.items.find(i => i.id === action.dataset.id);
                 item ??= this.actor.items.find(i => i.name === name);
                 if (item) {
                     // Wire action names
