@@ -95,40 +95,43 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             this.element.classList.toggle("visible-bio", !!context.sheetPrefs.visibleBiography);
 
             for (const action of this.element.querySelectorAll(".statblock-action")) {
-                const item = this.actor.items.find(i => i.id === action.dataset.id);
-                // Wire action names
                 const name = action.querySelector(".name");
-                const enrichedName = document.createElement("span");
-                enrichedName.classList.add("name", "statblock-roll-link-group");
-                enrichedName.dataset.rollItemUuid = item.uuid;
-                const uses = item.system.uses.label || (item.system.activities?.size === 1 ? item.system.activities?.contents[0]?.uses.label : undefined);
-                const finalName = uses ? `${item.name} (${uses})` : item.name;
-                enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${finalName}</span>`;
-                name.remove();
-                // Replace @UUID embeds with [[/item]] embeds
-                const originalDescription = item.system.description.value;
-                let description = originalDescription.replace(/@UUID\[(?<uuid>[^\]]+)\](?:\{(?<name>[^\}]+)\})?/g, (match, uuid, name) => {
-                    const { id } = foundry.utils.parseUuid(uuid);
-                    const itemOnActor = this.actor.items.get(id) ?? this.actor.items.getName(name);
-                    if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
-                    return match;
-                });
-                description = (await TextEditor.enrichHTML(description, {
-                    secrets: false, rollData: item.getRollData(), relativeTo: item
-                }));
-                action.innerHTML = description;
-                // Unwrap containing divs
-                let isWrapped;
-                do {
-                    isWrapped = action.children.length === 1 && action.children[0].tagName === "DIV";
-                    if (isWrapped) {
-                        action.children[0].outerHTML = action.children[0].innerHTML;
+                const item = this.actor.items.find(i => i.id === action.dataset.id);
+                item ??= this.actor.items.find(i => i.name === name);
+                if (item) {
+                    // Wire action names
+                    const enrichedName = document.createElement("span");
+                    enrichedName.classList.add("name", "statblock-roll-link-group");
+                    enrichedName.dataset.rollItemUuid = item.uuid;
+                    const uses = item.system.uses.label || (item.system.activities?.size === 1 ? item.system.activities?.contents[0]?.uses.label : undefined);
+                    const finalName = uses ? `${item.name} (${uses})` : item.name;
+                    enrichedName.innerHTML = `<span class="roll-link" data-action="use" data-item-id="${item.id}">${finalName}</span>`;
+                    name.remove();
+                    // Replace @UUID embeds with [[/item]] embeds
+                    const originalDescription = item.system.description.value;
+                    let description = originalDescription.replace(/@UUID\[(?<uuid>[^\]]+)\](?:\{(?<name>[^\}]+)\})?/g, (match, uuid, name) => {
+                        const { id } = foundry.utils.parseUuid(uuid);
+                        const itemOnActor = this.actor.items.get(id) ?? this.actor.items.getName(name);
+                        if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
+                        return match;
+                    });
+                    description = (await TextEditor.enrichHTML(description, {
+                        secrets: false, rollData: item.getRollData(), relativeTo: item
+                    }));
+                    action.innerHTML = description;
+                    // Unwrap containing divs
+                    let isWrapped;
+                    do {
+                        isWrapped = action.children.length === 1 && action.children[0].tagName === "DIV";
+                        if (isWrapped) {
+                            action.children[0].outerHTML = action.children[0].innerHTML;
+                        }
+                    } while (isWrapped);
+                    // Insert the enriched name
+                    const firstParagraph = action.firstElementChild;
+                    if (firstParagraph) {
+                        firstParagraph.prepend(enrichedName);
                     }
-                } while (isWrapped);
-                // Insert the enriched name
-                const firstParagraph = action.firstElementChild;
-                if (firstParagraph) {
-                    firstParagraph.prepend(enrichedName);
                 }
             }
 
