@@ -147,14 +147,18 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 //const gear = this.actor.system.getGear();
                 const formatter = game.i18n.getListFormatter({ type: "unit" });
                 const gear = formatter.format(
-                    this.actor.system.getGear().map(i => {
-                        let enrichedGear = `<span class="roll-link" data-action="use" data-item-id="${i.id}">${i.name}</span>`;
+                    (await this.actor.system.getGear()).map(i => {
+                        let itemOnActor = this.actor.items.get(i.id);
+                        if (!itemOnActor) {
+                            itemOnActor = this.actor.items.find(actorItem => actorItem._stats.compendiumSource === i.uuid);
+                        }
+                        let enrichedGear = `<span class="roll-link" data-action="use" data-item-id="${itemOnActor.id ?? i.id}">${itemOnActor.name ?? i.name}</span>`;
                         if (i.system.quantity > 1) enrichedGear += ` (${dnd5e.utils.formatNumber(i.system.quantity)})`;
                         return enrichedGear;
                     })
                 );
                 const gearDd = [...this.element.querySelectorAll(".statblock-header div dt")]
-                    .find(dt => dt.innerText === game.i18n.localize("DND5E.Gear"))
+                    .find(dt => [game.i18n.localize("DND5E.Gear"), game.i18n.localize("DND5E.Gear.Label")].includes(dt.innerText))
                     ?.parentNode.querySelector("dd");
                 if (gearDd) {
                     gearDd.innerHTML = gear;
