@@ -33,7 +33,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             container: { classes: ["main-content"], id: "main" },
             template: "systems/dnd5e/templates/actors/embeds/npc-embed.hbs"
         },
-        biography: {
+        biographyView: {
             container: { classes: ["main-content"], id: "main" },
             template: "modules/5e-statblock-sheet/templates/biography.hbs"
         }
@@ -46,9 +46,10 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             ...await this.actor.system._prepareEmbedContext(this.rulesVersion),
             name: this.actor.name
         });
-        context.biography = await this._prepareBiographyContext({ rollData: context.rollData });
+        context.biography = await this._prepareBiographyContext(context, { rollData: context.rollData });
         const baseActor = this.actor.isToken ? this.actor.parent.baseActor : this.actor;
         context.sheetPrefs = baseActor.getFlag("5e-statblock-sheet", "sheetPrefs") ?? {};
+        //console.log(context);
         return context;
     }
 
@@ -56,35 +57,31 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
     _configureRenderParts(options) {
         let parts = super._configureRenderParts(options);
         if (this._mode === this.constructor.MODES.EDIT) {
-            delete parts.statblock;
-            delete parts.biography;
+            if (parts.statblock) {
+                parts.statblock.classes ??= [];
+                parts.statblock.classes.push("hidden");
+            }
+            if (parts.biographyView) {
+                parts.biographyView.classes ??= [];
+                parts.biographyView.classes.push("hidden");
+            }
         } else {
-            parts = { statblock: parts.statblock, biography: parts.biography };
+            Object.keys(parts).filter(p => !["statblock", "biographyView"].includes(p)).forEach(p => {
+                parts[p].classes ??= [];
+                parts[p].classes.push("hidden");
+            });
         }
         return parts;
-    }
-
-    /** @inheritdoc */
-    async _configureRenderOptions(options) {
-        await super._configureRenderOptions(options);
-    }
-
-    /** @inheritDoc */
-    _replaceHTML(result, content, options) {
-        content.innerHTML = "";
-        super._replaceHTML(result, content, options);
     }
 
     /** @inheritDoc */
     async _onRender(context, options) {
         await super._onRender(context, options);
-        if (!this.element.querySelector(".sheet-body")) {
-            super._onFirstRender(context, options);
-        }
+        this._renderSpellbook({...context, editable: false }, options);
 
         if (this._mode === this.constructor.MODES.PLAY) {
             // Move bio after statblock
-            this.element.querySelector(`[data-application-part="statblock"]`).after(this.element.querySelector(`[data-application-part="biography"]`));
+            this.element.querySelector(`[data-application-part="statblock"]`).after(this.element.querySelector(`[data-application-part="biographyView"]`));
             // Inject bio toggle
             const bioToggle = document.createElement("i");
             bioToggle.classList.add("toggle-biography", "fa-solid", "fa-feather");

@@ -13,7 +13,7 @@
     min-height: 300px;
 }
 
-.actor.statblock-sheet .window-content .main-content:has(.statblock.npc) {
+.actor.statblock-sheet:not(.editable) .window-content .main-content:has(.statblock.npc) {
     flex-direction: column;
 }
 
@@ -31,6 +31,10 @@
     .visible-bio & {
         display: revert;
     }
+}
+
+.actor.statblock-sheet.editable .inventory-element .items-section .pips {
+    display: flex;
 }
 
 .actor.statblock-sheet .statblock.npc,
