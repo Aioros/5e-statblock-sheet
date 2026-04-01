@@ -147,8 +147,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     (await this.actor.system.getGear()).map(i => {
                         let itemOnActor = this.actor.items.get(i.id);
                         if (!itemOnActor) {
-                            itemOnActor = this.actor.items.find(actorItem => actorItem._stats.compendiumSource === i.uuid);
+                            itemOnActor = this.actor.items.find(actorItem => foundry.utils.parseUuid(actorItem._stats.compendiumSource).uuid === foundry.utils.parseUuid(i.uuid).uuid);
                         }
+                        if (!itemOnActor) return "";
                         let enrichedGear = `<span class="roll-link" data-action="use" data-item-id="${itemOnActor.id ?? i.id}">${itemOnActor.name ?? i.name}</span>`;
                         if (i.system.quantity > 1) enrichedGear += ` (${dnd5e.utils.formatNumber(i.system.quantity)})`;
                         return enrichedGear;
