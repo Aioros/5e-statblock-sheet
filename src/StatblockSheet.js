@@ -197,6 +197,35 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     }
             }
 
+            // HP editing
+            const hpDd = [...this.element.querySelectorAll(".statblock-header div dt")]
+                .find(dt => [game.i18n.localize("DND5E.HP"), game.i18n.localize("DND5E.HitPoints")].includes(dt.innerText))
+                ?.parentNode.querySelector("dd");
+            if (hpDd) {
+                const hpInput = this.element.querySelector(`input[name="system.attributes.hp.value"]`);
+                const statblockHpInput = hpInput.cloneNode(false);
+                hpInput.setAttribute("name", "");
+                statblockHpInput.removeAttribute("hidden");
+                statblockHpInput.addEventListener("change", this._onChangeInputDelta.bind(this));
+                statblockHpInput.addEventListener("focus", () => statblockHpInput.select());
+                statblockHpInput.addEventListener("blur", () => {
+                    statblockHpText.classList.remove("hidden");
+                    statblockHpInput.classList.add("hidden");
+                });
+                statblockHpInput.classList.add("statblock-hp-input", "hidden");
+                const statblockHpText = document.createElement("span");
+                statblockHpText.classList.add("statblock-hp-text")
+                statblockHpText.innerText = this.actor.system.attributes.hp.value;
+                statblockHpText.addEventListener("click", () => {
+                    statblockHpText.classList.add("hidden");
+                    statblockHpInput.classList.remove("hidden");
+                    statblockHpInput.focus();
+                });
+                hpDd.innerHTML = " / " + hpDd.innerHTML;
+                hpDd.prepend(statblockHpText);
+                hpDd.prepend(statblockHpInput);
+            }
+
             // Wire skills
             const skillDd = [...this.element.querySelectorAll(".statblock-header div dt")]
                 .find(dt => dt.innerText === game.i18n.localize("DND5E.Skills"))

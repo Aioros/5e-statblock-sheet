@@ -109,3 +109,11 @@
         text-decoration: underline;
     }
 }
+
+.actor.statblock-sheet .statblock-hp-text {
+    cursor: pointer;
+}
+
+.actor.statblock-sheet .statblock-hp-input {
+    width: 36px;
+}
