@@ -144,7 +144,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 //const gear = this.actor.system.getGear();
                 const formatter = game.i18n.getListFormatter({ type: "unit" });
                 const gear = formatter.format(
-                    (await this.actor.system.getGear()).map(i => {
+                    this.actor.items.filter(item => item.system.quantity && item.system.properties?.has("gear")).map(i => {
                         let itemOnActor = this.actor.items.get(i.id);
                         if (!itemOnActor) {
                             itemOnActor = this.actor.items.find(actorItem => foundry.utils.parseUuid(actorItem._stats.compendiumSource)?.uuid === foundry.utils.parseUuid(i.uuid)?.uuid);
