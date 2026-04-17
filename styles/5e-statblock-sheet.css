@@ -1,15 +1,5 @@
-:root {
-    --statblock-sheet-columns: 1;
-    --statblock-sheet-min-zoom: 0;
-    --statblock-sheet-max-zoom: 10;
-
-    .actor.statblock-sheet:has(.window-content.double-column) {
-        --statblock-sheet-columns: 2;
-    }
-}
-
 .dnd5e2.sheet.actor.npc.statblock-sheet:not(.minimized, .minimizing, .maximizing, .editable) {
-    min-width: 250px;
+    min-width: 300px;
     min-height: 300px;
 }
 
@@ -17,11 +7,13 @@
     flex-direction: column;
 }
 
-.actor.statblock-sheet .statblock.npc {
-    margin: 10px auto auto;
+.actor.statblock-sheet:not(.editable) .tab-body {
+    display: none;
+}
 
-    --calcZoom: calc(tan(atan2(var(--statblock-sheet-window-size), var(--statblock-sheet-columns) * var(--dnd5e-statblock-column-width))));
-    zoom: clamp(var(--statblock-sheet-min-zoom), var(--calcZoom), var(--statblock-sheet-max-zoom));
+.actor.statblock-sheet .statblock.npc {
+    max-width: none;
+    container-type: inline-size;
 }
 
 .actor.statblock-sheet .statblock-biography {
@@ -55,12 +47,58 @@
     font-family: var(--dnd5e-font-roboto-slab);
     position: relative;
 
-    .toggle-biography {
+    .statblock-control {
         display: inline;
         position: absolute;
         top: 2px;
-        right: 0;
         cursor: pointer;
+
+        &.toggle-biography {
+            right: 0;
+
+            .visible-bio & {
+                color: var(--color-text-light-1);
+                text-shadow: var(--dnd5e-color-gold) 1px 0 10px;
+            }
+        }
+
+        &.toggle-doublecolumn {
+            right: 30px;
+
+            .double-column & {
+                color: var(--color-text-light-1);
+                text-shadow: var(--dnd5e-color-gold) 1px 0 10px;
+            }
+        }
+
+        &.zoom-container {
+            right: 60px;
+            width: 90px;
+            height: 20px;
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: space-between;
+
+            &:not(:hover) {
+                * {
+                    display: none;
+                }
+
+                &::after {
+                    font-family: var(--font-awesome);
+                    content: "\f002";
+                }
+            }
+
+            &:hover * {
+                display: inline;
+            }
+
+            .zoom-label {
+                line-height: 0.9;
+                font-size: smaller;
+            }
+        }
     }
 }
 
@@ -116,4 +154,10 @@
 
 .actor.statblock-sheet .statblock-hp-input {
     width: 36px;
+}
+
+@container (width < 570px) {
+    .actor.statblock-sheet .double-column .rules-2024 .abilities {
+        grid: none;
+    }
 }

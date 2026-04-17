@@ -5,7 +5,11 @@
             "2024": "5e Stat Block 2024"
         },
         "Buttons": {
-            "ToggleBiography": "Toggle Biography"
+            "ToggleBiography": "Toggle Biography",
+            "ToggleDoubleColumn": "Two Columns",
+            "ZoomIn": "Zoom In",
+            "ZoomOut": "Zoom Out",
+            "ZoomReset": "Reset"
         },
         "Settings": {
             "MinFontSize": {

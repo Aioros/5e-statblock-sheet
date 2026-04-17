@@ -22,42 +22,14 @@ Hooks.once("init", () => {
             label: "5eStatblockSheet.SheetNames.2024",
         }
     );
-
-    game.settings.register("5e-statblock-sheet", "minFontSize", {
-        name: "5eStatblockSheet.Settings.MinFontSize.Name",
-        scope: "client",
-        config: true,
-        type: Number,
-        range: {
-            min: 7,
-            step: 1,
-            max: 24
-        },
-        default: 11,
-        onChange: (minFontSize) => {
-            document.querySelector(":root").style.setProperty("--statblock-sheet-min-zoom", minFontSize / 13);
-        }
-    });
-
-    game.settings.register("5e-statblock-sheet", "maxFontSize", {
-        name: "5eStatblockSheet.Settings.MaxFontSize.Name",
-        scope: "client",
-        config: true,
-        type: Number,
-        range: {
-            min: 7,
-            step: 1,
-            max: 22
-        },
-        default: 16,
-        onChange: (maxFontSize) => {
-            document.querySelector(":root").style.setProperty("--statblock-sheet-max-zoom", maxFontSize / 13);
-        }
-    });
-
 });
 
-Hooks.on("ready", () => {
-    document.querySelector(":root").style.setProperty("--statblock-sheet-min-zoom", game.settings.get("5e-statblock-sheet", "minFontSize") / 13);
-    document.querySelector(":root").style.setProperty("--statblock-sheet-max-zoom", game.settings.get("5e-statblock-sheet", "maxFontSize") / 13);
+Hooks.on("setup", () => {
+    // Remove old flags
+    if (game.user.flags.dnd5e?.sheetPrefs?.["npc-statblock"]) {
+        game.user.unsetFlag("dnd5e", "sheetPrefs.npc-statblock");
+    }
+    if (game.user.flags.dnd5e?.sheetPrefs?.["npc-statblock:limited"]) {
+		game.user.unsetFlag("dnd5e", "sheetPrefs.npc-statblock:limited");
+    }
 });
