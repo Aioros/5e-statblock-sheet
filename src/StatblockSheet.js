@@ -44,7 +44,13 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
             name: this.actor.name
         });
         context.biography = await this._prepareBiographyContext(context, { rollData: context.rollData });
-        context.sheetPrefs = this.baseActor.getFlag("5e-statblock-sheet", "sheetPrefs") ?? {};
+        const defaultSettings = {
+            doubleColumn: game.settings.get("5e-statblock-sheet", "defaultLayout") === "doubleColumn",
+            visibleBiography: game.settings.get("5e-statblock-sheet", "defaultVisibleBiography"),
+            zoom: game.settings.get("5e-statblock-sheet", "defaultZoom") / 100
+        };
+        context.sheetPrefs = foundry.utils.duplicate(defaultSettings);
+        context.sheetPrefs = foundry.utils.mergeObject(context.sheetPrefs, this.baseActor.getFlag("5e-statblock-sheet", "sheetPrefs") ?? {});
         //console.log(context);
         return context;
     }
@@ -351,35 +357,36 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
     static async _toggleDoubleColumn(event, target) {
         const isDoubleColumn = this.element.querySelector(".window-content").classList.contains("double-column");
         this.element.querySelector(".window-content").classList.toggle("double-column", !isDoubleColumn);
-        await this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.doubleColumn", !isDoubleColumn);
+        this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.doubleColumn", !isDoubleColumn);
     }
 
     static _toggleBiography(event, target) {
         const isVisibleBio = this.element.classList.contains("visible-bio");
         this.element.classList.toggle("visible-bio", !isVisibleBio);
         this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.visibleBiography", !isVisibleBio);
+        this.baseActor.unsetFlag("5e-statblock-sheet", "sheetPrefs.visibleBiography");
     }
 
     static _zoomIn(event, target) {
         const statblockContentEl = this.element.querySelector(".statblock-content");
-        const currentZoom = parseFloat(statblockContentEl.style.zoom) || 1;
-        statblockContentEl.style.zoom = currentZoom + 0.15;
-        this.element.querySelector(".zoom-label").innerText = Math.round(statblockContentEl.style.zoom * 100) + "%";
-        this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.zoom", statblockContentEl.style.zoom);
+        const newZoom = Math.round((parseFloat(statblockContentEl.style.zoom || 1) + 0.15) * 100) / 100;
+        statblockContentEl.style.zoom = newZoom;
+        this.element.querySelector(".zoom-label").innerText = Math.round(newZoom * 100) + "%";
+        this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.zoom", newZoom);
     }
     
-
     static _zoomOut(event, target) {
         const statblockContentEl = this.element.querySelector(".statblock-content");
-        const currentZoom = parseFloat(statblockContentEl.style.zoom) || 1;
-        statblockContentEl.style.zoom = currentZoom - 0.15;
-        this.element.querySelector(".zoom-label").innerText = Math.round(statblockContentEl.style.zoom * 100) + "%";
-        this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.zoom", statblockContentEl.style.zoom);
+        const newZoom = Math.round((parseFloat(statblockContentEl.style.zoom || 1) - 0.15) * 100) / 100;
+        statblockContentEl.style.zoom = newZoom;
+        this.element.querySelector(".zoom-label").innerText = Math.round(newZoom * 100) + "%";
+        this.baseActor.setFlag("5e-statblock-sheet", "sheetPrefs.zoom", newZoom);
     }
 
     static _zoomReset(event, target) {
+        const newZoom100 = game.settings.get("5e-statblock-sheet", "defaultZoom");
         this.element.querySelector(".statblock-content").style.removeProperty("zoom");
-        this.element.querySelector(".zoom-label").innerText = "100%";
+        this.element.querySelector(".zoom-label").innerText = newZoom100 + "%";
         this.baseActor.unsetFlag("5e-statblock-sheet", "sheetPrefs.zoom");
     }
 }

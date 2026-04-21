@@ -12,11 +12,16 @@
             "ZoomReset": "Reset"
         },
         "Settings": {
-            "MinFontSize": {
-                "Name": "Minimum Font Size (px)"
+            "DefaultLayout": {
+                "Name": "Default Layout",
+                "Auto": "Single Column",
+                "DoubleColumn": "Two Columns"
             },
-            "MaxFontSize": {
-                "Name": "Maximum Font Size (px)"
+            "DefaultVisibleBiography": {
+                "Name": "Show Biography by Default"
+            },
+            "DefaultZoom": {
+                "Name": "Default Zoom (%)"
             }
         }
     }

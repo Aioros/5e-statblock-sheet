@@ -22,6 +22,39 @@ Hooks.once("init", () => {
             label: "5eStatblockSheet.SheetNames.2024",
         }
     );
+
+    game.settings.register("5e-statblock-sheet", "defaultLayout", {
+        name: "5eStatblockSheet.Settings.DefaultLayout.Name",
+        scope: "world",
+        config: true,
+        default: "auto",
+        type: String,
+        choices: {
+            auto: "5eStatblockSheet.Settings.DefaultLayout.Auto",
+            doubleColumn: "5eStatblockSheet.Settings.DefaultLayout.DoubleColumn"
+        }
+    });
+
+    game.settings.register("5e-statblock-sheet", "defaultZoom", {
+        name: "5eStatblockSheet.Settings.DefaultZoom.Name",
+        scope: "world",
+        config: true,
+        default: 1,
+        type: Number,
+        range: {
+            min: 40,
+            step: 15,
+            max: 160
+        },
+    });
+
+    game.settings.register("5e-statblock-sheet", "defaultVisibleBiography", {
+        name: "5eStatblockSheet.Settings.DefaultVisibleBiography.Name",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean
+    });
 });
 
 Hooks.on("setup", () => {
