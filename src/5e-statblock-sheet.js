@@ -39,7 +39,7 @@ Hooks.once("init", () => {
         name: "5eStatblockSheet.Settings.DefaultZoom.Name",
         scope: "world",
         config: true,
-        default: 1,
+        default: 100,
         type: Number,
         range: {
             min: 40,

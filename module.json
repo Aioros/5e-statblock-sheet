@@ -5,7 +5,7 @@
   "version": "",
   "compatibility": {
     "minimum": "13",
-    "verified": "14.360"
+    "verified": "14.361"
   },
   "authors": [
     {
@@ -29,7 +29,7 @@
         "type": "system",
         "compatibility": {
           "minimum": "5.2.0",
-          "verified": "5.3.1"
+          "verified": "5.3.3"
         }
       }
     ]
