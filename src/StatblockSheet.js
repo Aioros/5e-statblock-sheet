@@ -155,8 +155,8 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                     // Replace @UUID embeds with [[/item]] embeds
                     const originalDescription = item.system.description.value;
                     let description = originalDescription.replace(/@UUID\[(?<uuid>[^\]]+)\](?:\{(?<name>[^\}]+)\})?/g, (match, uuid, name) => {
-                        const { id } = foundry.utils.parseUuid(uuid);
-                        const itemOnActor = this.actor.items.get(id) ?? this.actor.items.getName(name);
+                        const linkedDocument = foundry.utils.parseUuid(uuid, { relative: this.actor });
+                        const itemOnActor = this.actor.items.get(linkedDocument?.id) ?? this.actor.items.getName(name);
                         if (itemOnActor) return `[[/item .${itemOnActor.id}]]`;
                         return match;
                     });
