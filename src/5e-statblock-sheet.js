@@ -1,4 +1,4 @@
-import { StatblockSheet2014, StatblockSheet2024 } from "./StatblockSheet.js";
+import { StatblockSheet, StatblockSheet2014, StatblockSheet2024 } from "./StatblockSheet.js";
 
 Hooks.once("init", () => {
     const documentSheetConfig = foundry.applications.apps.DocumentSheetConfig;
@@ -22,6 +22,17 @@ Hooks.once("init", () => {
             label: "5eStatblockSheet.SheetNames.2024",
         }
     );
+
+    game.settings.register("5e-statblock-sheet", "showPortrait", {
+        name: "5eStatblockSheet.Settings.ShowPortrait.Name",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+        onChange: show => {
+            [...foundry.applications.instances.values()].filter(app => app instanceof StatblockSheet).forEach(sheet => sheet.render({force: true}));
+        }
+    });
 
     game.settings.register("5e-statblock-sheet", "defaultLayout", {
         name: "5eStatblockSheet.Settings.DefaultLayout.Name",

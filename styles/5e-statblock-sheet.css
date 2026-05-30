@@ -25,6 +25,11 @@
     }
 }
 
+.actor.statblock-sheet .statblock-portrait {
+    width: 80px;
+    margin-right: 10px;
+}
+
 .actor.statblock-sheet.editable .inventory-element .items-section .pips {
     display: flex;
 }
@@ -46,11 +51,12 @@
     font-size: var(--dnd5e-journal-h3-size);
     font-family: var(--dnd5e-font-roboto-slab);
     position: relative;
+    display: flex;
+    align-items: center;
 
     .statblock-control {
         display: inline;
         position: absolute;
-        top: 2px;
         cursor: pointer;
 
         &.toggle-biography {

@@ -1,6 +1,6 @@
 const TextEditor = foundry.applications.ux.TextEditor.implementation;
 
-class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
+export class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
 
     rulesVersion;
     baseActor;
@@ -33,6 +33,9 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         biographyView: {
             container: { classes: ["main-content"], id: "main" },
             template: "modules/5e-statblock-sheet/templates/biography.hbs"
+        },
+        portrait: {
+            template: "modules/5e-statblock-sheet/templates/portrait.hbs"
         }
     };
 
@@ -51,6 +54,7 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         };
         context.sheetPrefs = foundry.utils.duplicate(defaultSettings);
         context.sheetPrefs = foundry.utils.mergeObject(context.sheetPrefs, this.baseActor.getFlag("5e-statblock-sheet", "sheetPrefs") ?? {});
+        context.sheetPrefs.showPortrait = game.settings.get("5e-statblock-sheet", "showPortrait");
         //console.log(context);
         return context;
     }
@@ -76,8 +80,12 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
                 parts.biographyView.classes ??= [];
                 parts.biographyView.classes.push("hidden");
             }
+            if (parts.portrait) {
+                parts.portrait.classes ??= [];
+                parts.portrait.classes.push("hidden");
+            }
         } else {
-            Object.keys(parts).filter(p => !["statblock", "biographyView"].includes(p)).forEach(p => {
+            Object.keys(parts).filter(p => !["statblock", "biographyView", "portrait"].includes(p)).forEach(p => {
                 parts[p].classes ??= [];
                 parts[p].classes.push("hidden");
             });
@@ -91,6 +99,12 @@ class StatblockSheet extends dnd5e.applications.actor.NPCActorSheet {
         this._renderSpellbook({...context, editable: false }, options);
 
         if (this._mode === this.constructor.MODES.PLAY) {
+
+            const title = this.element.querySelector(".statblock-title");
+            const portrait = this.element.querySelector(".statblock-portrait");
+            if (!context.sheetPrefs.showPortrait) portrait.classList.add("hidden");
+            title.insertBefore(portrait, title.firstChild);
+
             // Move bio after statblock
             this.element.querySelector(`[data-application-part="statblock"]`).after(this.element.querySelector(`[data-application-part="biographyView"]`));
 
